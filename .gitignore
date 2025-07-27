@@ -13,6 +13,7 @@
 *.hdf5
 *.pkl
 *.pickle
+_*.py
 
 # Python cache and compiled files
 __pycache__/
