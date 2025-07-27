@@ -3,7 +3,7 @@ import json
 import streamlit as st
 
 
-openai_api_key = st.secrets["openai_api_key"]
+openai_api_key = st.secrets["api_keys"]["openai_api_key"]
 client = OpenAI(api_key=openai_api_key)
 
 
