@@ -1,5 +1,38 @@
 import streamlit as st
+import csv
+import os
+from datetime import datetime
 from prompt_functions import prompt_creator, prompt_to_answer, ans_summarizer
+
+
+def log_to_csv(question, prompt_ans, final_ans):
+    """Log the question and answers to a CSV file"""
+    csv_file = "data/question_logs.csv"
+
+    # Create data directory if it doesn't exist
+    os.makedirs("data", exist_ok=True)
+
+    # Check if file exists to determine if we need to write headers
+    file_exists = os.path.exists(csv_file)
+
+    # Prepare data for logging
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Convert prompt_ans dict to string for CSV storage
+    prompt_ans_str = ""
+    for step, answer in prompt_ans.items():
+        prompt_ans_str += f"{step}: {answer}\n\n"
+
+    # Write to CSV
+    with open(csv_file, "a", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+
+        # Write headers if file is new
+        if not file_exists:
+            writer.writerow(["Timestamp", "Question", "Prompt_Answers", "Final_Answer"])
+
+        # Write the data
+        writer.writerow([timestamp, question, prompt_ans_str, final_ans])
 
 
 st.title("IAS Mains Answer Generator")
@@ -29,6 +62,9 @@ if st.button("Generate Answer", type="primary", use_container_width=True):
                 prompt_answers += "\n\n"
 
             final_ans = ans_summarizer(prompt_answers, steps, qn_prompt)
+
+            # Log the question and answers to CSV
+            log_to_csv(qn_prompt, prompt_ans, final_ans)
 
             # Display the answer in a nice format
             st.success("Answer generated successfully!")
